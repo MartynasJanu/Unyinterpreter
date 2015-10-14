@@ -4,6 +4,10 @@ string:select
 selectBegin
 
 SELECT
+SELECT
+[whitespace]
+
+SELECT
 SELECT NEST
 string:(
 selectNest
@@ -14,16 +18,22 @@ string:*
 selectAddAllColumns
 
 SELECT
+SELECT FROM
+string:from
+selectFromBegin
+
+SELECT
 SELECT COL
 [alfanum]
 selectAddColumnPush
 
 SELECT NEST
 SELECT
-[epsilon]
+string:select
+selectBegin
 
 SELECT UNEST
-SELECT
+SELECT ACOL
 [epsilon]
 
 SELECT ALL
@@ -31,9 +41,13 @@ SELECT
 string:,
 
 SELECT ALL
-FROM
+SELECT FROM
 string:from
 selectFromBegin
+
+SELECT ALL
+SELECT ALL
+[whitespace]
 
 SELECT COL
 SELECT
@@ -68,6 +82,14 @@ SELECT FROM
 string:from
 selectFromBegin
 
+SELECT ACOL
+SELECT ACOL
+[whitespace]
+
+SELECT FROM
+SELECT FROM
+[whitespace]
+
 SELECT FROM
 SELECT FROM TABLE
 [alfanum]
@@ -81,4 +103,9 @@ selectFromPush
 SELECT FROM TABLE
 SELECT UNEST
 string:)
+selectEnd
+
+SELECT FROM TABLE
+SELECT FROM TABLE
+[end]
 selectEnd
