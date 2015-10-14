@@ -1,0 +1,84 @@
+START
+SELECT
+select
+selectBegin
+
+SELECT
+SELECT NEST
+(
+selectNest
+
+SELECT
+SELECT ALL
+*
+selectAddAllColumns
+
+SELECT
+SELECT COL
+[alfanum]
+selectAddColumnPush
+
+SELECT NEST
+SELECT
+[epsilon]
+
+SELECT UNEST
+SELECT
+[epsilon]
+
+SELECT ALL
+SELECT
+,
+
+SELECT ALL
+FROM
+from
+selectFromBegin
+
+SELECT COL
+SELECT
+,
+selectAddColumn
+
+SELECT COL
+SELECT COL
+[alfanum]
+selectAddColumnPush
+
+SELECT COL
+SELECT TABLE COL
+.
+selectAddColumnTablePush
+
+SELECT COL
+SELECT ACOL
+[whitespace]
+selectAddColumn
+
+SELECT TABLE COL
+SELECT COL
+[epsilon]
+
+SELECT ACOL
+SELECT
+,
+
+SELECT ACOL
+SELECT FROM
+from
+selectFromBegin
+
+SELECT FROM
+SELECT FROM TABLE
+[alfanum]
+selectFromPush
+
+SELECT FROM TABLE
+SELECT FROM TABLE
+[alfanum]
+selectFromPush
+
+SELECT FROM TABLE
+SELECT UNEST
+)
+selectEnd
