@@ -2,7 +2,7 @@
 
 namespace UnyInterpreter;
 
-class UnyMachine
+abstract class UnyMachineAbstract
 {
     //put your code here
 }
