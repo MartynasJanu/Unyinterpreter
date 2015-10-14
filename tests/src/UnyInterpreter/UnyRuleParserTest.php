@@ -78,7 +78,7 @@ class UnyRuleParserTest extends \PHPUnit_Framework_TestCase
     public function getTestRules()
     {
         $conditions = [
-            'literal',
+            'string:literal',
             '[epsilon]',
             '[whitespace]',
             '[alfanum]',
@@ -106,15 +106,15 @@ class UnyRuleParserTest extends \PHPUnit_Framework_TestCase
                     ++$state;
                     $rules .= "STATE{$state}\n";
                     $states[] = "STATE{$state}";
-                    $transitions['STATE'.($state - 1)]["STATE{$state}"] = [];
+                    $transitions['STATE'.($state - 1)][$condition] = [];
 
                     $rules .= $condition."\n";
-                    $transitions['STATE'.($state - 1)]["STATE{$state}"]['condition'] = $condition;
+                    $transitions['STATE'.($state - 1)][$condition]['target'] = "STATE{$state}";
                     if (!empty($callback)) {
                         $rules .= $callback."\n";
-                        $transitions['STATE'.($state - 1)]["STATE{$state}"]['callback'] = $callback;
+                        $transitions['STATE'.($state - 1)][$condition]['callback'] = $callback;
                     } else {
-                        $transitions['STATE'.($state - 1)]["STATE{$state}"]['callback'] = null;
+                        $transitions['STATE'.($state - 1)][$condition]['callback'] = null;
                     }
 
                     $rules .= "\n";
@@ -123,15 +123,15 @@ class UnyRuleParserTest extends \PHPUnit_Framework_TestCase
                         --$state;
                     }
                     $rules .= "STATE{$state}\n";
-                    $transitions['STATE'.$state]["STATE{$state}"] = [];
+                    $transitions['STATE'.$state][$condition] = [];
 
                     $rules .= $condition."\n";
-                    $transitions['STATE'.$state]["STATE{$state}"]['condition'] = $condition;
+                    $transitions['STATE'.$state][$condition]['target'] = "STATE{$state}";
                     if (!empty($callback)) {
                         $rules .= $callback."\n";
-                        $transitions['STATE'.$state]["STATE{$state}"]['callback'] = $callback;
+                        $transitions['STATE'.$state][$condition]['callback'] = $callback;
                     } else {
-                        $transitions['STATE'.$state]["STATE{$state}"]['callback'] = null;
+                        $transitions['STATE'.$state][$condition]['callback'] = null;
                     }
 
                     $tests[] = [

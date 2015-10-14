@@ -1,16 +1,16 @@
 START
 SELECT
-select
+string:select
 selectBegin
 
 SELECT
 SELECT NEST
-(
+string:(
 selectNest
 
 SELECT
 SELECT ALL
-*
+string:*
 selectAddAllColumns
 
 SELECT
@@ -28,16 +28,16 @@ SELECT
 
 SELECT ALL
 SELECT
-,
+string:,
 
 SELECT ALL
 FROM
-from
+string:from
 selectFromBegin
 
 SELECT COL
 SELECT
-,
+string:,
 selectAddColumn
 
 SELECT COL
@@ -47,7 +47,7 @@ selectAddColumnPush
 
 SELECT COL
 SELECT TABLE COL
-.
+string:.
 selectAddColumnTablePush
 
 SELECT COL
@@ -61,11 +61,11 @@ SELECT COL
 
 SELECT ACOL
 SELECT
-,
+string:,
 
 SELECT ACOL
 SELECT FROM
-from
+string:from
 selectFromBegin
 
 SELECT FROM
@@ -80,5 +80,5 @@ selectFromPush
 
 SELECT FROM TABLE
 SELECT UNEST
-)
+string:)
 selectEnd

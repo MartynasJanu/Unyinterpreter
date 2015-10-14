@@ -61,11 +61,10 @@ class UnyRuleParser
             $this->states[$transition['init']] = 1;
             $this->states[$transition['target']] = 1;
 
-            $this->transitions[$transition['init']][$transition['target']] = [
-                'condition' => $transition['condition'],
+            $this->transitions[$transition['init']][$transition['condition']] = [
+                'target' => $transition['target'],
                 'callback' => $transition['callback'],
             ];
-
 
             // skip empty lines
             ++$i;
