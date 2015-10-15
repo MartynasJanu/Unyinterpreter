@@ -69,6 +69,9 @@ class UnyMachineBuilder
         $replace['%STATES_ARRAY%'] = "'".implode("', '", $this->rules['states'])."'";
         $replace['%STATES_ARRAY%'] = str_replace(', ', ",\n{$tab}{$tab}", $replace['%STATES_ARRAY%']);
 
+        // transitions
+        $replace['%TRANSITIONS_JSON%'] = json_encode($this->rules['transitions']);
+
         // methods
         $methods = [];
         foreach ($this->rules['transitions'] as $init => $conditions) {

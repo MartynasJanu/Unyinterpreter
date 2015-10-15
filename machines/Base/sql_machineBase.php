@@ -1,17 +1,26 @@
 <?php
 
-namespace %PATH%\Base;
+namespace unyInterpreter\machines\Base;
 
-class %NAME%Base {
+class sql_machineBase {
     protected $input = '';
     protected $input_i = 0;
     protected $input_l = 0;
 
     protected $states = [
-        %STATES_ARRAY%
+        'START',
+        'SELECT',
+        'SELECT NEST',
+        'SELECT ALL',
+        'SELECT COL',
+        'SELECT UNEST',
+        'SELECT TABLE COL',
+        'SELECT ACOL',
+        'SELECT FROM',
+        'SELECT FROM TABLE',
     ];
 
-    protected $transitions;
+    public $transitions;
 
     protected $state_id;
     protected $state_transitions;
@@ -21,8 +30,7 @@ class %NAME%Base {
     public function execute($input)
     {
         $this->input = $input;
-
-        $this->transitions = json_decode('%TRANSITIONS_JSON%', true);
+        //$this->transitions = json_decode('{"START":{"string:select":{"target":"SELECT","callback":"selectBegin"}},"SELECT":{"[whitespace]":{"target":"SELECT","callback":null},"string:(":{"target":"SELECT NEST","callback":"selectNest"},"string:*":{"target":"SELECT ALL","callback":"selectAddAllColumns"},"[alfanum]":{"target":"SELECT COL","callback":"selectAddColumnPush"}},"SELECT NEST":{"[epsilon]":{"target":"SELECT","callback":null}},"SELECT UNEST":{"[epsilon]":{"target":"SELECT","callback":null}},"SELECT ALL":{"string:,":{"target":"SELECT","callback":null},"string:from":{"target":"FROM","callback":"selectFromBegin"},"[whitespace]":{"target":"SELECT ALL","callback":null}},"SELECT COL":{"string:,":{"target":"SELECT","callback":"selectAddColumn"},"[alfanum]":{"target":"SELECT COL","callback":"selectAddColumnPush"},"string:.":{"target":"SELECT TABLE COL","callback":"selectAddColumnTablePush"},"[whitespace]":{"target":"SELECT ACOL","callback":"selectAddColumn"}},"SELECT TABLE COL":{"[epsilon]":{"target":"SELECT COL","callback":null}},"SELECT ACOL":{"string:,":{"target":"SELECT","callback":null},"string:from":{"target":"SELECT FROM","callback":"selectFromBegin"}},"SELECT FROM":{"[alfanum]":{"target":"SELECT FROM TABLE","callback":"selectFromPush"}},"SELECT FROM TABLE":{"[alfanum]":{"target":"SELECT FROM TABLE","callback":"selectFromPush"},"string:)":{"target":"SELECT UNEST","callback":"selectEnd"}}}', true);
 
         // set initial (first) state
         $this->setState();
@@ -144,10 +152,11 @@ class %NAME%Base {
 
     protected function callTransitionCallback($transition, $param = null)
     {
-        if (!empty($transition['callback'])) {
+        if (!empty($transition['callback']) //&&
+        //    method_exists($this, $transition['callback'])
+        ) {
             $this->{$transition['callback']}($param);
+            //call_user_func($transition['callback']);
         }
     }
-
-    // Automatically generated methods that should be overriden in the child class
-%METHODS%}
+}
