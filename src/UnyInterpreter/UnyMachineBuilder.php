@@ -70,7 +70,7 @@ class UnyMachineBuilder
         $replace['%STATES_ARRAY%'] = str_replace(', ', ",\n{$tab}{$tab}", $replace['%STATES_ARRAY%']);
 
         // transitions
-        $replace['%TRANSITIONS_JSON%'] = json_encode($this->rules['transitions']);
+        $replace['%TRANSITIONS%'] = serialize($this->rules['transitions']);
 
         // methods
         $methods = [];

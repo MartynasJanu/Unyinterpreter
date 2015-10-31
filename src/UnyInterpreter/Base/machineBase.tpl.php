@@ -22,7 +22,7 @@ class %NAME%Base {
     {
         $this->input = $input;
 
-        $this->transitions = json_decode('%TRANSITIONS_JSON%', true);
+        $this->transitions = unserialize('%TRANSITIONS%');
 
         // set initial (first) state
         $this->setState();
@@ -46,8 +46,18 @@ class %NAME%Base {
                 if (substr($condition, 0, 7) == 'string:') {
                     $string = substr($condition, 7);
                     $next = $this->isNextString($string);
-                    if ($next != false) {
+                    if ($next !== false) {
                         $this->satisfyCondition($transition, $next, strlen($string));
+                        $error = false;
+                        break;
+                    }
+
+                // regex condition
+                } elseif (substr($condition, 0, 6) == 'regex:') {
+                    $regex = substr($condition, 6);
+                    $next = $this->isNextRegex($regex);
+                    if ($next !== false) {
+                        $this->satisfyCondition($transition, $next, strlen($next));
                         $error = false;
                         break;
                     }
@@ -73,7 +83,7 @@ class %NAME%Base {
                 // notwhitespace condition
                 } elseif ($condition == '[notwhitespace]') {
                     $next = $this->isNextNotWhitespace();
-                    if ($next === false) {
+                    if ($next !== false) {
                         $this->satisfyCondition($transition, $next);
                         $error = false;
                         break;
@@ -140,6 +150,20 @@ class %NAME%Base {
             return $next_string;
         } else {
             return false;
+        }
+    }
+
+    protected function isNextRegex($regex)
+    {
+        $next_line = substr($this->input, $this->input_i);
+        $next_line = strstr($next_line, "\n", true);
+        $matches = [];
+        preg_match($regex, $next_line, $matches);
+
+        if (count($matches) === 0) {
+            return false;
+        } else {
+            return $matches[0];
         }
     }
 
