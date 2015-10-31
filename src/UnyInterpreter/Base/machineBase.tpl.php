@@ -54,6 +54,7 @@ class %NAME%Base {
                         $error = false;
                         break;
                     }
+
                 // alfanumeric condition
                 } elseif ($condition == '[alfanum]') {
                     $next = $this->isNextAlfanum();
@@ -77,12 +78,24 @@ class %NAME%Base {
                         $error = false;
                         break;
                     }
+
+                // any character condition
+                } elseif ($condition == '[any]') {
+                    $next = $this->isNextAny();
+                    if ($next !== false) {
+                        ++$this->input_i;
+
+                        $this->callTransitionCallback($transition, $next);
+                        $this->setState($transition['target']);
+                        $error = false;
+                        break;
+                    }
                 }
             }
 
             if ($error) {
                 echo "\nAt state {$this->state_id}\n";
-                echo 'Unexpected '.$this->input[$this->input_i]."\n";
+                echo 'Unexpected \''.$this->input[$this->input_i]."'\n";
                 echo 'Expected: '.print_r(array_keys($this->state_transitions), true);
                 die;
             }
@@ -140,6 +153,15 @@ class %NAME%Base {
         } else {
             return false;
         }
+    }
+
+    protected function isNextAny()
+    {
+        if ($this->input_i == $this->input_l) {
+            return false;
+        }
+
+        return $this->input[$this->input_i];
     }
 
     protected function callTransitionCallback($transition, $param = null)
