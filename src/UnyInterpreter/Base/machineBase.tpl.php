@@ -47,10 +47,7 @@ class %NAME%Base {
                     $string = substr($condition, 7);
                     $next = $this->isNextString($string);
                     if ($next != false) {
-                        $this->input_i += strlen($string);
-
-                        $this->callTransitionCallback($transition, $next);
-                        $this->setState($transition['target']);
+                        $this->satisfyCondition($transition, $next, strlen($string));
                         $error = false;
                         break;
                     }
@@ -59,10 +56,7 @@ class %NAME%Base {
                 } elseif ($condition == '[alfanum]') {
                     $next = $this->isNextAlfanum();
                     if ($next !== false) {
-                        ++$this->input_i;
-
-                        $this->callTransitionCallback($transition, $next);
-                        $this->setState($transition['target']);
+                        $this->satisfyCondition($transition, $next);
                         $error = false;
                         break;
                     }
@@ -71,10 +65,16 @@ class %NAME%Base {
                 } elseif ($condition == '[whitespace]') {
                     $next = $this->isNextWhitespace();
                     if ($next !== false) {
-                        ++$this->input_i;
+                        $this->satisfyCondition($transition, $next);
+                        $error = false;
+                        break;
+                    }
 
-                        $this->callTransitionCallback($transition, $next);
-                        $this->setState($transition['target']);
+                // notwhitespace condition
+                } elseif ($condition == '[notwhitespace]') {
+                    $next = $this->isNextNotWhitespace();
+                    if ($next === false) {
+                        $this->satisfyCondition($transition, $next);
                         $error = false;
                         break;
                     }
@@ -83,10 +83,7 @@ class %NAME%Base {
                 } elseif ($condition == '[any]') {
                     $next = $this->isNextAny();
                     if ($next !== false) {
-                        ++$this->input_i;
-
-                        $this->callTransitionCallback($transition, $next);
-                        $this->setState($transition['target']);
+                        $this->satisfyCondition($transition, $next);
                         $error = false;
                         break;
                     }
@@ -96,6 +93,7 @@ class %NAME%Base {
             if ($error) {
                 echo "\nAt state {$this->state_id}\n";
                 echo 'Unexpected \''.$this->input[$this->input_i]."'\n";
+                echo 'Input: \''.substr($this->input, $this->input_i, 10)."'\n";
                 echo 'Expected: '.print_r(array_keys($this->state_transitions), true);
                 die;
             }
@@ -105,6 +103,16 @@ class %NAME%Base {
         if (isset($this->state_transitions['[end]'])) {
             $this->callTransitionCallback($this->state_transitions['[end]']);
         }
+    }
+
+    protected function satisfyCondition($transition, $next = null, $inc_input = 1, $callback = true)
+    {
+        $this->input_i += $inc_input;
+
+        if ($callback) {
+            $this->callTransitionCallback($transition, $next);
+        }
+        $this->setState($transition['target']);
     }
 
     protected function setState($id = null)
@@ -142,6 +150,17 @@ class %NAME%Base {
             return $next;
         } else {
             return false;
+        }
+    }
+
+    protected function isNextNotWhitespace()
+    {
+        $next = $this->input[$this->input_i];
+        $next_trimmed = trim($next);
+        if (strlen($next_trimmed) === 0) {
+            return false;
+        } else {
+            return $next;
         }
     }
 
