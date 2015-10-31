@@ -93,7 +93,8 @@ class UnyMachineBuilder
             $replace['%METHODS%'] .= $tab." * Callback called when swithing states:\n";
             foreach ($method as $trans) {
                 $replace['%METHODS%'] .= $tab.' * '.$trans['transition'].'; ';
-                $replace['%METHODS%'] .= 'On condition: '.$trans['condition']."\n";
+                $cond = str_replace('*/', '* /', $trans['condition']);
+                $replace['%METHODS%'] .= 'On condition: '.$cond."\n";
             }
             $replace['%METHODS%'] .= $tab."*/\n";
 
