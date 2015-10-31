@@ -71,6 +71,15 @@ class %NAME%Base {
                         break;
                     }
 
+                // newline condition
+                } elseif ($condition == '[newline]') {
+                    $next = $this->isNextNewline();
+                    if ($next !== false) {
+                        $this->satisfyCondition($transition, $next);
+                        $error = false;
+                        break;
+                    }
+
                 // whitespace condition
                 } elseif ($condition == '[whitespace]') {
                     $next = $this->isNextWhitespace();
@@ -117,10 +126,12 @@ class %NAME%Base {
 
     protected function satisfyCondition($transition, $next = null, $inc_input = 1, $callback = true)
     {
-        $this->input_i += $inc_input;
-
         if ($callback) {
-            $this->callTransitionCallback($transition, $next);
+            if ($this->callTransitionCallback($transition, $next) !== true) {
+                $this->input_i += $inc_input;
+            }
+        } else {
+            $this->input_i += $inc_input;
         }
         $this->setState($transition['target']);
     }
@@ -157,6 +168,9 @@ class %NAME%Base {
     {
         $next_line = substr($this->input, $this->input_i);
         $next_line = strstr($next_line, "\n", true);
+        if ($next_line == '') {
+            $next_line = substr($this->input, $this->input_i);
+        }
         $matches = [];
         preg_match($regex, $next_line, $matches);
 
@@ -164,6 +178,16 @@ class %NAME%Base {
             return false;
         } else {
             return $matches[0];
+        }
+    }
+
+    protected function isNextNewline()
+    {
+        $next = $this->input[$this->input_i];
+        if ($next == "\n" || $next == "\r") {
+            return $next;
+        } else {
+            return false;
         }
     }
 
