@@ -54,15 +54,15 @@ class UnyRuleParser
                 ];
 
                 $this->transitions[$loop_title] = [
-                    // repeat transition
-                    $repeat[0] => [
-                        'target' => $loop_title,
-                        'callback' => (!empty($repeat[1]) ? $repeat[1] : null),
-                    ],
                     // exit transition
                     $exit[0] => [
                         'target' => $loop_init_state,
                         'callback' => (!empty($exit[1]) ? $exit[1] : null),
+                    ],
+                    // repeat transition
+                    $repeat[0] => [
+                        'target' => $loop_title,
+                        'callback' => (!empty($repeat[1]) ? $repeat[1] : null),
                     ],
                 ];
                 $i += 4;
