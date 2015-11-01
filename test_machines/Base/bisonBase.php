@@ -9,8 +9,6 @@ class bisonBase {
 
     protected $states = [
         'START',
-        'TEST',
-        'COMMENT',
         'C_DECL',
         'UNION',
         'UNION_TYPE',
@@ -25,7 +23,12 @@ class bisonBase {
         'TYPE_SYML',
         'TYPE_SYM',
         'OTHER_TOKEN',
-        'GRAM'
+        'GRAM',
+        'GRAM_COMMENT',
+        'GRAM_RULE',
+        'GRAM_RULE_COMPONENT',
+        'GRAM_RULE_COMPONENT_ACTION',
+        'GRAM_RULE_COMPONENT_ACTION_COMMENT'
     ];
 
     protected $transitions;
@@ -39,7 +42,7 @@ class bisonBase {
     {
         $this->input = $input;
 
-        $this->transitions = unserialize('a:16:{s:5:"START";a:9:{s:13:"call:gotoTest";a:2:{s:6:"target";s:4:"TEST";s:8:"callback";s:10:"wenttotest";}s:12:"[whitespace]";a:2:{s:6:"target";s:5:"START";s:8:"callback";N;}s:9:"string:/*";a:2:{s:6:"target";s:7:"COMMENT";s:8:"callback";s:12:"startComment";}s:9:"string:%{";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:10:"startCdecl";}s:15:"string:%union {";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";s:10:"startUnion";}s:13:"string:%token";a:2:{s:6:"target";s:9:"TOKEN_PRE";s:8:"callback";N;}s:12:"string:%type";a:2:{s:6:"target";s:8:"TYPE_PRE";s:8:"callback";N;}s:26:"regex:/\%([a-zA-Z0-9-_]+)/";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";s:15:"startOtherToken";}s:9:"string:%%";a:2:{s:6:"target";s:4:"GRAM";s:8:"callback";s:9:"startGram";}}s:7:"COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:10:"endComment";}s:5:"[any]";a:2:{s:6:"target";s:7:"COMMENT";s:8:"callback";s:11:"pushComment";}}s:6:"C_DECL";a:2:{s:9:"string:%}";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:9:"stopCdecl";}s:5:"[any]";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:9:"pushCdecl";}}s:5:"UNION";a:4:{s:8:"string:}";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:8:"endUnion";}s:15:"[notwhitespace]";a:2:{s:6:"target";s:10:"UNION_TYPE";s:8:"callback";s:14:"startUnionType";}s:25:"regex:/\s+struct(\s*?)\{/";a:2:{s:6:"target";s:12:"UNION_STRUCT";s:8:"callback";s:14:"startUnionType";}s:5:"[any]";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";N;}}s:12:"UNION_STRUCT";a:2:{s:8:"string:}";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";s:14:"endUnionStruct";}s:5:"[any]";a:2:{s:6:"target";s:12:"UNION_STRUCT";s:8:"callback";s:13:"pushUnionType";}}s:10:"UNION_TYPE";a:2:{s:15:"[notwhitespace]";a:2:{s:6:"target";s:10:"UNION_TYPE";s:8:"callback";s:13:"pushUnionType";}s:12:"[whitespace]";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";s:12:"endUnionType";}}s:11:"UNION_PREID";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:8:"UNION_ID";s:8:"callback";s:12:"startUnionId";}}s:8:"UNION_ID";a:2:{s:8:"string:;";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";s:10:"endUnionId";}s:5:"[any]";a:2:{s:6:"target";s:8:"UNION_ID";s:8:"callback";s:11:"pushUnionId";}}s:9:"TOKEN_PRE";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TOKEN_PRE";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:5:"TOKEN";s:8:"callback";s:10:"startToken";}}s:5:"TOKEN";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:8:"endToken";}s:5:"[any]";a:2:{s:6:"target";s:5:"TOKEN";s:8:"callback";s:9:"pushToken";}}s:8:"TYPE_PRE";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:8:"TYPE_PRE";s:8:"callback";N;}s:8:"string:<";a:2:{s:6:"target";s:4:"TYPE";s:8:"callback";s:9:"startType";}}s:4:"TYPE";a:2:{s:8:"string:>";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:7:"endType";}s:5:"[any]";a:2:{s:6:"target";s:4:"TYPE";s:8:"callback";s:8:"pushType";}}s:9:"TYPE_POST";a:6:{s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";N;}s:8:"string:%";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}s:8:"string:\'";a:2:{s:6:"target";s:9:"TYPE_SYML";s:8:"callback";s:22:"startTypeSymbolLiteral";}s:8:"string:;";a:2:{s:6:"target";s:5:"START";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:8:"TYPE_SYM";s:8:"callback";s:15:"startTypeSymbol";}s:5:"[any]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}}s:9:"TYPE_SYML";a:2:{s:8:"string:\'";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:20:"endTypeSymbolLiteral";}s:5:"[any]";a:2:{s:6:"target";s:9:"TYPE_SYML";s:8:"callback";s:21:"pushTypeSymbolLiteral";}}s:8:"TYPE_SYM";a:3:{s:23:"regex:/([A-Za-z0-9_]+)/";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:14:"pushTypeSymbol";}s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:13:"endTypeSymbol";}s:5:"[any]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}}s:11:"OTHER_TOKEN";a:3:{s:9:"[newline]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:13:"endOtherToken";}s:24:"regex:/\s+\/\*(.*?)\*\//";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";N;}s:5:"[any]";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";s:14:"pushOtherToken";}}}');
+        $this->transitions = unserialize('a:25:{s:5:"START";a:8:{s:12:"[whitespace]";a:2:{s:6:"target";s:5:"START";s:8:"callback";N;}s:9:"string:/*";a:2:{s:6:"target";s:7:"COMMENT";s:8:"callback";s:12:"startComment";}s:9:"string:%{";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:10:"startCdecl";}s:15:"string:%union {";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";s:10:"startUnion";}s:13:"string:%token";a:2:{s:6:"target";s:9:"TOKEN_PRE";s:8:"callback";N;}s:12:"string:%type";a:2:{s:6:"target";s:8:"TYPE_PRE";s:8:"callback";N;}s:26:"regex:/\%([a-zA-Z0-9-_]+)/";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";s:15:"startOtherToken";}s:9:"string:%%";a:2:{s:6:"target";s:4:"GRAM";s:8:"callback";s:9:"startGram";}}s:7:"COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:10:"endComment";}s:5:"[any]";a:2:{s:6:"target";s:7:"COMMENT";s:8:"callback";s:11:"pushComment";}}s:6:"C_DECL";a:4:{s:9:"string:%}";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:9:"stopCdecl";}s:9:"string:/*";a:2:{s:6:"target";s:14:"C_DECL_COMMENT";s:8:"callback";s:9:"pushCdecl";}s:8:"string:"";a:2:{s:6:"target";s:13:"C_DECL_STRING";s:8:"callback";s:9:"pushCdecl";}s:5:"[any]";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:9:"pushCdecl";}}s:14:"C_DECL_COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:9:"pushCdecl";}s:5:"[any]";a:2:{s:6:"target";s:14:"C_DECL_COMMENT";s:8:"callback";s:9:"pushCdecl";}}s:13:"C_DECL_STRING";a:2:{s:8:"string:"";a:2:{s:6:"target";s:6:"C_DECL";s:8:"callback";s:9:"pushCdecl";}s:5:"[any]";a:2:{s:6:"target";s:13:"C_DECL_STRING";s:8:"callback";s:9:"pushCdecl";}}s:5:"UNION";a:5:{s:9:"string:/*";a:2:{s:6:"target";s:13:"UNION_COMMENT";s:8:"callback";N;}s:8:"string:}";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:8:"endUnion";}s:15:"[notwhitespace]";a:2:{s:6:"target";s:10:"UNION_TYPE";s:8:"callback";s:14:"startUnionType";}s:25:"regex:/\s+struct(\s*?)\{/";a:2:{s:6:"target";s:12:"UNION_STRUCT";s:8:"callback";s:14:"startUnionType";}s:5:"[any]";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";N;}}s:13:"UNION_COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";N;}s:5:"[any]";a:2:{s:6:"target";s:13:"UNION_COMMENT";s:8:"callback";N;}}s:12:"UNION_STRUCT";a:2:{s:8:"string:}";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";s:14:"endUnionStruct";}s:5:"[any]";a:2:{s:6:"target";s:12:"UNION_STRUCT";s:8:"callback";s:13:"pushUnionType";}}s:10:"UNION_TYPE";a:2:{s:15:"[notwhitespace]";a:2:{s:6:"target";s:10:"UNION_TYPE";s:8:"callback";s:13:"pushUnionType";}s:12:"[whitespace]";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";s:12:"endUnionType";}}s:11:"UNION_PREID";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:11:"UNION_PREID";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:8:"UNION_ID";s:8:"callback";s:12:"startUnionId";}}s:8:"UNION_ID";a:2:{s:8:"string:;";a:2:{s:6:"target";s:5:"UNION";s:8:"callback";s:10:"endUnionId";}s:5:"[any]";a:2:{s:6:"target";s:8:"UNION_ID";s:8:"callback";s:11:"pushUnionId";}}s:9:"TOKEN_PRE";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TOKEN_PRE";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:5:"TOKEN";s:8:"callback";s:10:"startToken";}}s:5:"TOKEN";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:8:"endToken";}s:5:"[any]";a:2:{s:6:"target";s:5:"TOKEN";s:8:"callback";s:9:"pushToken";}}s:8:"TYPE_PRE";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:8:"TYPE_PRE";s:8:"callback";N;}s:8:"string:<";a:2:{s:6:"target";s:4:"TYPE";s:8:"callback";s:9:"startType";}}s:4:"TYPE";a:2:{s:8:"string:>";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:7:"endType";}s:5:"[any]";a:2:{s:6:"target";s:4:"TYPE";s:8:"callback";s:8:"pushType";}}s:9:"TYPE_POST";a:6:{s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";N;}s:8:"string:%";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}s:8:"string:\'";a:2:{s:6:"target";s:9:"TYPE_SYML";s:8:"callback";s:22:"startTypeSymbolLiteral";}s:8:"string:;";a:2:{s:6:"target";s:5:"START";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:8:"TYPE_SYM";s:8:"callback";s:15:"startTypeSymbol";}s:5:"[any]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}}s:9:"TYPE_SYML";a:2:{s:8:"string:\'";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:20:"endTypeSymbolLiteral";}s:5:"[any]";a:2:{s:6:"target";s:9:"TYPE_SYML";s:8:"callback";s:21:"pushTypeSymbolLiteral";}}s:8:"TYPE_SYM";a:3:{s:23:"regex:/([A-Za-z0-9_]+)/";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:14:"pushTypeSymbol";}s:12:"[whitespace]";a:2:{s:6:"target";s:9:"TYPE_POST";s:8:"callback";s:13:"endTypeSymbol";}s:5:"[any]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:22:"endTypeSymbolNoConsume";}}s:11:"OTHER_TOKEN";a:3:{s:9:"[newline]";a:2:{s:6:"target";s:5:"START";s:8:"callback";s:13:"endOtherToken";}s:24:"regex:/\s+\/\*(.*?)\*\//";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";N;}s:5:"[any]";a:2:{s:6:"target";s:11:"OTHER_TOKEN";s:8:"callback";s:14:"pushOtherToken";}}s:4:"GRAM";a:4:{s:9:"string:/*";a:2:{s:6:"target";s:12:"GRAM_COMMENT";s:8:"callback";N;}s:12:"[whitespace]";a:2:{s:6:"target";s:4:"GRAM";s:8:"callback";N;}s:25:"regex:/([A-Za-z0-9_]+)\:/";a:2:{s:6:"target";s:9:"GRAM_RULE";s:8:"callback";s:13:"startGramRule";}s:9:"string:%%";a:2:{s:6:"target";s:5:"START";s:8:"callback";N;}}s:12:"GRAM_COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:4:"GRAM";s:8:"callback";N;}s:5:"[any]";a:2:{s:6:"target";s:12:"GRAM_COMMENT";s:8:"callback";N;}}s:9:"GRAM_RULE";a:2:{s:12:"[whitespace]";a:2:{s:6:"target";s:9:"GRAM_RULE";s:8:"callback";N;}s:15:"[notwhitespace]";a:2:{s:6:"target";s:19:"GRAM_RULE_COMPONENT";s:8:"callback";s:22:"startGramRuleComponent";}}s:19:"GRAM_RULE_COMPONENT";a:5:{s:12:"[whitespace]";a:2:{s:6:"target";s:19:"GRAM_RULE_COMPONENT";s:8:"callback";N;}s:8:"string:|";a:2:{s:6:"target";s:19:"GRAM_RULE_COMPONENT";s:8:"callback";N;}s:8:"string:;";a:2:{s:6:"target";s:4:"GRAM";s:8:"callback";N;}s:8:"string:{";a:2:{s:6:"target";s:26:"GRAM_RULE_COMPONENT_ACTION";s:8:"callback";s:28:"startGramRuleComponentAction";}s:15:"[notwhitespace]";a:2:{s:6:"target";s:19:"GRAM_RULE_COMPONENT";s:8:"callback";s:21:"pushGramRuleComponent";}}s:26:"GRAM_RULE_COMPONENT_ACTION";a:3:{s:9:"string:/*";a:2:{s:6:"target";s:34:"GRAM_RULE_COMPONENT_ACTION_COMMENT";s:8:"callback";N;}s:33:"call:isEndGramRuleComponentAction";a:2:{s:6:"target";s:19:"GRAM_RULE_COMPONENT";s:8:"callback";s:26:"endGramRuleComponentAction";}s:5:"[any]";a:2:{s:6:"target";s:26:"GRAM_RULE_COMPONENT_ACTION";s:8:"callback";s:27:"pushGramRuleComponentAction";}}s:34:"GRAM_RULE_COMPONENT_ACTION_COMMENT";a:2:{s:9:"string:*/";a:2:{s:6:"target";s:26:"GRAM_RULE_COMPONENT_ACTION";s:8:"callback";N;}s:5:"[any]";a:2:{s:6:"target";s:34:"GRAM_RULE_COMPONENT_ACTION_COMMENT";s:8:"callback";N;}}}');
 
         // set initial (first) state
         $this->setState();
@@ -62,7 +65,8 @@ class bisonBase {
                 // method callback condition
                 if (substr($condition, 0, 5) == 'call:') {
                     $f = substr($condition, 5);
-                    if ($this->$f()) {
+                    $next = $this->input[$this->input_i];
+                    if ($this->$f($next)) {
                         $this->satisfyCondition($transition, '', 0);
                         $error = false;
                         break;
@@ -138,7 +142,7 @@ class bisonBase {
             if ($error) {
                 echo "\nAt state {$this->state_id}\n";
                 echo 'Unexpected \''.$this->input[$this->input_i]."'\n";
-                echo 'Input: \''.substr($this->input, $this->input_i, 10)."'\n";
+                echo 'Input: \''.substr($this->input, $this->input_i, 50)."'\n";
                 echo 'Expected: '.print_r(array_keys($this->state_transitions), true);
                 die;
             }
@@ -274,15 +278,6 @@ class bisonBase {
     // Automatically generated methods that should be overriden in the child class
     /**
      * Callback called when swithing states:
-     * START => TEST; On condition: call:gotoTest
-    */
-    public function wenttotest($param = null)
-    {
-
-    }
-
-    /**
-     * Callback called when swithing states:
      * START => COMMENT; On condition: string:/*
     */
     public function startComment($param = null)
@@ -355,7 +350,13 @@ class bisonBase {
 
     /**
      * Callback called when swithing states:
+     * C_DECL => C_DECL_COMMENT; On condition: string:/*
+     * C_DECL => C_DECL_STRING; On condition: string:"
      * C_DECL => C_DECL; On condition: [any]
+     * C_DECL_COMMENT => C_DECL; On condition: string:* /
+     * C_DECL_COMMENT => C_DECL_COMMENT; On condition: [any]
+     * C_DECL_STRING => C_DECL; On condition: string:"
+     * C_DECL_STRING => C_DECL_STRING; On condition: [any]
     */
     public function pushCdecl($param = null)
     {
@@ -569,6 +570,60 @@ class bisonBase {
      * OTHER_TOKEN => OTHER_TOKEN; On condition: [any]
     */
     public function pushOtherToken($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM => GRAM_RULE; On condition: regex:/([A-Za-z0-9_]+)\:/
+    */
+    public function startGramRule($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE => GRAM_RULE_COMPONENT; On condition: [notwhitespace]
+    */
+    public function startGramRuleComponent($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE_COMPONENT => GRAM_RULE_COMPONENT_ACTION; On condition: string:{
+    */
+    public function startGramRuleComponentAction($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE_COMPONENT => GRAM_RULE_COMPONENT; On condition: [notwhitespace]
+    */
+    public function pushGramRuleComponent($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE_COMPONENT_ACTION => GRAM_RULE_COMPONENT; On condition: call:isEndGramRuleComponentAction
+    */
+    public function endGramRuleComponentAction($param = null)
+    {
+
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE_COMPONENT_ACTION => GRAM_RULE_COMPONENT_ACTION; On condition: [any]
+    */
+    public function pushGramRuleComponentAction($param = null)
     {
 
     }
