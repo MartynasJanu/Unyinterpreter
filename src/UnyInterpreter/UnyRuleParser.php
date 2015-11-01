@@ -50,19 +50,19 @@ class UnyRuleParser
                 // enter transition
                 $this->transitions[$loop_init_state][$enter[0]] = [
                     'target' => $loop_title,
-                    'callback' => ($enter[1]? $enter[1] : null),
+                    'callback' => (!empty($enter[1]) ? $enter[1] : null),
                 ];
 
                 $this->transitions[$loop_title] = [
                     // repeat transition
                     $repeat[0] => [
                         'target' => $loop_title,
-                        'callback' => ($repeat[1]? $repeat[1] : null),
+                        'callback' => (!empty($repeat[1]) ? $repeat[1] : null),
                     ],
                     // exit transition
                     $exit[0] => [
                         'target' => $loop_init_state,
-                        'callback' => ($exit[1]? $exit[1] : null),
+                        'callback' => (!empty($exit[1]) ? $exit[1] : null),
                     ],
                 ];
                 $i += 4;
@@ -117,7 +117,6 @@ class UnyRuleParser
             }
         }
 
-        print_R($this->transitions);die;
         $this->states = array_keys($this->states);
     }
 

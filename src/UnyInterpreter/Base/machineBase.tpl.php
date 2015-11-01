@@ -122,7 +122,7 @@ class %NAME%Base {
             if ($error) {
                 echo "\nAt state {$this->state_id}\n";
                 echo 'Unexpected \''.$this->input[$this->input_i]."'\n";
-                echo 'Input: \''.substr($this->input, $this->input_i, 10)."'\n";
+                echo 'Input: \''.substr($this->input, $this->input_i, 50)."'\n";
                 echo 'Expected: '.print_r(array_keys($this->state_transitions), true);
                 die;
             }
