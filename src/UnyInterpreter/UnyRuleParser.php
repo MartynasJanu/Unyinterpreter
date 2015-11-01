@@ -85,7 +85,7 @@ class UnyRuleParser
                 }
                 $transition['condition'] = trim($lines[$i]);
                 ++$i;
-                if ($i == $c) {
+                if ($i >= $c) {
                     break;
                 }
 
@@ -107,7 +107,7 @@ class UnyRuleParser
 
             // skip empty lines
             ++$i;
-            if ($i == $c) {
+            if ($i >= $c) {
                 break;
             }
             $line = trim($lines[$i]);
