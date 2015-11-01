@@ -36,19 +36,119 @@ class bison_machineTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers unyInterpreter\machines\Base\sql_machineBase::execute
-     * @todo   Implement testExecute().
      * @dataProvider getMysqlYY
      */
     public function testExecute($data)
     {
-        $parser = new \UnyInterpreter\UnyRuleParser();
-        $parser->parseFile('rules/bison.uny');
-
+        return;
         $this->object->execute($data['input']);
 
         $this->assertEquals($data['unions'], $this->object->unions);
         $this->assertEquals($data['other_tokens'], $this->object->other_tokens);
         $this->assertEquals($data['types'], $this->object->types);
+    }
+
+    /**
+     * @covers unyInterpreter\machines\Base\sql_machineBase::execute
+     * @dataProvider getUnions
+     */
+    public function testOther($data)
+    {
+        $this->object->execute($data['input']);
+
+        if (isset($data['cdecl'])) {
+            $this->assertEquals($data['cdecl'], $this->object->cdecl);
+        }
+
+        if (isset($data['unions'])) {
+            $this->assertEquals($data['unions'], $this->object->unions);
+        }
+
+        if (isset($data['other_tokens'])) {
+            $this->assertEquals($data['other_tokens'], $this->object->other_tokens);
+        }
+
+        if (isset($data['types'])) {
+            $this->assertEquals($data['types'], $this->object->types);
+        }
+    }
+
+    public function getUnions()
+    {
+        return [
+            [
+                [
+                    'input' => '
+                        /* c declaration */
+                        %{
+                            int x; /* X coordinate */
+                            int y; /* Y coordinate */
+                            int z; /* Z coordinate */
+                            char* title;
+                            double len; /* vector magnitude ; */
+                        %}',
+                    'cdecl' => '
+                            int x; /* X coordinate */
+                            int y; /* Y coordinate */
+                            int z; /* Z coordinate */
+                            char* title;
+                            double len; /* vector magnitude ; */
+                        ',
+                ],
+            ],
+            [
+                [
+                    'input' => '
+                        /* c declaration */
+                        %{
+                            int x; /* X coordinate */
+                            int y; /* Y coordinate */
+                            int z; /* Z coordinate */
+
+                            char* title; /* some comments can be really nasty. */
+                            /* For example if it has a %} symbol in it */
+
+                            char* syntax_breaker = "this string is here
+                            to ruin your tests /* */ %}";
+
+                            double len; /* vector magnitude ; */
+                        %}',
+                    'cdecl' => '
+                            int x; /* X coordinate */
+                            int y; /* Y coordinate */
+                            int z; /* Z coordinate */
+
+                            char* title; /* some comments can be really nasty. */
+                            /* For example if it has a %} symbol in it */
+
+                            char* syntax_breaker = "this string is here
+                            to ruin your tests /* */ %}";
+
+                            double len; /* vector magnitude ; */
+                        ',
+                ],
+            ],
+            [
+                [
+                    'input' => '
+                        /* union */
+                        %union {
+                            int x; /* X coordinate */
+                            int y; /* Y coordinate */
+                            int z; /* Z coordinate */
+                            char* title;
+                            double len; /* vector magnitude ; */
+                        }',
+                    'unions' => [
+                        ['type' => 'int', 'id' => 'x'],
+                        ['type' => 'int', 'id' => 'y'],
+                        ['type' => 'int', 'id' => 'z'],
+                        ['type' => 'char*', 'id' => 'title'],
+                        ['type' => 'double', 'id' => 'len'],
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function getMysqlYY()

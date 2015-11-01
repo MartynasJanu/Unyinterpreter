@@ -2,20 +2,10 @@ START
 START
 [whitespace]
 
-START
-COMMENT
-string:/*
-startComment
-
-COMMENT
-START
-string:*/
-endComment
-
-COMMENT
-COMMENT
-[any]
-pushComment
+LOOP START COMMENT
+string:/* startComment
+[any] pushComment
+string:*/ endComment
 
 START
 C_DECL
@@ -26,6 +16,16 @@ C_DECL
 START
 string:%}
 stopCdecl
+
+LOOP C_DECL C_DECL_COMMENT
+string:/* pushCdecl
+[any] pushCdecl
+string:*/ pushCdecl
+
+LOOP C_DECL C_DECL_STRING
+string:" pushCdecl
+[any] pushCdecl
+string:" pushCdecl
 
 C_DECL
 C_DECL
