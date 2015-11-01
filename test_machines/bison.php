@@ -11,6 +11,11 @@ class bison extends Base\bisonBase {
     public $other_tokens = [];
     public $types = [];
 
+    public function startGram($param = null)
+    {
+        //print_R($this->types);die;
+    }
+
     /**
      * Callback called when swithing states:
      * START => COMMENT; On condition: string:/*
@@ -94,7 +99,7 @@ class bison extends Base\bisonBase {
     */
     public function endUnionType($param = null)
     {
-        echo "\nUNION TYPE:".$this->unions[count($this->unions)-1]['type']."\n";
+        //echo "\nUNION TYPE:".$this->unions[count($this->unions)-1]['type']."\n";
     }
 
     /**
@@ -142,8 +147,8 @@ class bison extends Base\bisonBase {
     */
     public function endUnion($param = null)
     {
-        echo "\nUNIONS:\n";
-        print_r($this->unions);
+        //echo "\nUNIONS:\n";
+        //print_r($this->unions);
     }
 
     /**
@@ -167,7 +172,7 @@ class bison extends Base\bisonBase {
         $this->other_tokens[count($this->other_tokens)-1]['value'] =
             trim($this->other_tokens[count($this->other_tokens)-1]['value']);
         //print_R($this->other_tokens);die;
-        print_r($this->other_tokens[count($this->other_tokens)-1]);
+        //print_r($this->other_tokens[count($this->other_tokens)-1]);
     }
 
     /**
@@ -176,7 +181,7 @@ class bison extends Base\bisonBase {
     */
     public function pushOtherToken($param = null)
     {
-        echo 'push '.$param."\n";
+        //echo 'push '.$param."\n";
         $this->other_tokens[count($this->other_tokens)-1]['value'] .= $param;
     }
 
@@ -202,7 +207,7 @@ class bison extends Base\bisonBase {
     */
     public function endToken($param = null)
     {
-        echo 'TOKEN: '.$this->tokens[count($this->tokens)-1]."\n";
+        //echo 'TOKEN: '.$this->tokens[count($this->tokens)-1]."\n";
     }
 
 
@@ -251,13 +256,13 @@ class bison extends Base\bisonBase {
     */
     public function pushTypeSymbol($param = null)
     {
-        if (trim($param) == 'engine_control_command') {
+        if (trim($param) == 'ngine_control_command') {
             $a = 1;
         }
         $this->types[count($this->types)-1]['symbols']
             [count($this->types[count($this->types)-1]['symbols'])-1]
             .= $param;
-        print_r($this->types);
+        //print_r($this->types);
     }
 
     /**
@@ -266,7 +271,7 @@ class bison extends Base\bisonBase {
     */
     public function endTypeSymbol($param = null)
     {
-        print_r($this->types);
+        //print_r($this->types);
     }
 
     /**
@@ -276,5 +281,34 @@ class bison extends Base\bisonBase {
     public function endTypeSymbolNoConsume($param = null)
     {
         return true;
+    }
+
+    /**
+     * Callback called when swithing states:
+     * TYPE_POST => TYPE_SYML; On condition: string:'
+    */
+    public function startTypeSymbolLiteral($param = null)
+    {
+        $this->types[count($this->types)-1]['literals'][] = '';
+    }
+
+    /**
+     * Callback called when swithing states:
+     * TYPE_SYML => TYPE_POST; On condition: string:'
+    */
+    public function endTypeSymbolLiteral($param = null)
+    {
+        //print_r($this->types);
+    }
+
+    /**
+     * Callback called when swithing states:
+     * TYPE_SYML => TYPE_SYML; On condition: [any]
+    */
+    public function pushTypeSymbolLiteral($param = null)
+    {
+        $this->types[count($this->types)-1]['literals']
+            [count($this->types[count($this->types)-1]['literals'])-1]
+            .= $param;
     }
 }
