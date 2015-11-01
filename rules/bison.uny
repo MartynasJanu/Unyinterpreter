@@ -49,7 +49,7 @@ startUnionType
 
 UNION
 UNION_STRUCT
-regex:/\s+struct\s*?\{/
+regex:/\s+struct(\s*?)\{/
 startUnionType
 
 UNION
@@ -146,6 +146,30 @@ TYPE_POST
 [whitespace]
 
 TYPE_POST
+START
+string:%
+endTypeSymbolNoConsume
+
+TYPE_POST
+TYPE_SYML
+string:'
+startTypeSymbolLiteral
+
+TYPE_SYML
+TYPE_POST
+string:'
+endTypeSymbolLiteral
+
+TYPE_SYML
+TYPE_SYML
+[any]
+pushTypeSymbolLiteral
+
+TYPE_POST
+START
+string:;
+
+TYPE_POST
 TYPE_SYM
 [notwhitespace]
 startTypeSymbol
@@ -188,3 +212,8 @@ OTHER_TOKEN
 OTHER_TOKEN
 [any]
 pushOtherToken
+
+START
+GRAM
+string:%%
+startGram
