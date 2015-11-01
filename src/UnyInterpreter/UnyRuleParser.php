@@ -36,33 +36,35 @@ class UnyRuleParser
             // LOOP
             if (substr($lines[$i], 0, 5) == 'LOOP ') {
                 $loop_info = explode(' ', $lines[$i], 3);
+                if (count($loop_info) != 3) {
+                    $this->error($lines[$i], $i, 'LOOP <INIT STATE> <LOOP NAME>');
+                }
+
                 $loop_init_state = $loop_info[1];
                 $loop_title = $loop_info[2];
 
-                $enter = $lines[$i + 1];
-                $repeat = $lines[$i + 2];
-                $exit = $lines[$i + 3];
+                $enter = explode(' ', $lines[$i + 1]);
+                $repeat = explode(' ', $lines[$i + 2]);
+                $exit = explode(' ', $lines[$i + 3]);
 
                 // enter transition
-                $this->transitions[$loop_init_state][$enter] = [
+                $this->transitions[$loop_init_state][$enter[0]] = [
                     'target' => $loop_title,
-                    'callback' => null,
+                    'callback' => ($enter[1]? $enter[1] : null),
                 ];
-
 
                 $this->transitions[$loop_title] = [
                     // repeat transition
-                    $repeat => [
+                    $repeat[0] => [
                         'target' => $loop_title,
-                        'callback' => null,
+                        'callback' => ($repeat[1]? $repeat[1] : null),
                     ],
                     // exit transition
-                    $exit => [
+                    $exit[0] => [
                         'target' => $loop_init_state,
-                        'callback' => null,
+                        'callback' => ($exit[1]? $exit[1] : null),
                     ],
                 ];
-
                 $i += 4;
 
             // general case
@@ -123,7 +125,7 @@ class UnyRuleParser
     {
         echo "UnyI: Syntax error after line ({$number}): {$line}\n";
         if (!empty($expected)) {
-            echo "Expected: {$expected}\n";
+            echo "Expected: {$expected}\n\n";
         }
         die;
     }
