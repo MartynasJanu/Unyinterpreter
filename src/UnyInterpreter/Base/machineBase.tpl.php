@@ -42,8 +42,18 @@ class %NAME%Base {
 
             $error = true;
             foreach ($this->state_transitions as $condition => $transition) {
+                // method callback condition
+                if (substr($condition, 0, 5) == 'call:') {
+                    $f = substr($condition, 5);
+                    $next = $this->input[$this->input_i];
+                    if ($this->$f($next)) {
+                        $this->satisfyCondition($transition, '', 0);
+                        $error = false;
+                        break;
+                    }
+
                 // string condition
-                if (substr($condition, 0, 7) == 'string:') {
+                } elseif (substr($condition, 0, 7) == 'string:') {
                     $string = substr($condition, 7);
                     $next = $this->isNextString($string);
                     if ($next !== false) {
