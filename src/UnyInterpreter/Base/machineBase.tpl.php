@@ -167,10 +167,15 @@ class %NAME%Base {
     protected function isNextRegex($regex)
     {
         $next_line = substr($this->input, $this->input_i);
-        $next_line = strstr($next_line, "\n", true);
-        if ($next_line == '') {
-            $next_line = substr($this->input, $this->input_i);
+        if ($next_line[0] != "\n") {
+            $next_line = strstr($next_line, "\n", true);
+            if ($next_line == '') {
+                $next_line = substr($this->input, $this->input_i);
+            }
+        } else {
+            $next_line = '';
         }
+
         $matches = [];
         preg_match($regex, $next_line, $matches);
 
@@ -234,8 +239,10 @@ class %NAME%Base {
     protected function callTransitionCallback($transition, $param = null)
     {
         if (!empty($transition['callback'])) {
-            $this->{$transition['callback']}($param);
+            return $this->{$transition['callback']}($param);
         }
+
+        return false;
     }
 
     // Automatically generated methods that should be overriden in the child class

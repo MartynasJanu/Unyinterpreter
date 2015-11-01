@@ -70,7 +70,9 @@ class UnyMachineBuilder
         $replace['%STATES_ARRAY%'] = str_replace(', ', ",\n{$tab}{$tab}", $replace['%STATES_ARRAY%']);
 
         // transitions
-        $replace['%TRANSITIONS%'] = serialize($this->rules['transitions']);
+        $transitions = serialize($this->rules['transitions']);
+        $transitions = str_replace("'", "\\'", $transitions);
+        $replace['%TRANSITIONS%'] = $transitions;
 
         // methods
         $methods = [];
