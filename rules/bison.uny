@@ -150,6 +150,11 @@ TYPE_POST
 TYPE_POST
 [whitespace]
 
+LOOP TYPE_POST TYPE_POST_COMMENT
+string:/*
+[any]
+string:*/
+
 TYPE_POST
 START
 string:%
@@ -231,6 +236,11 @@ LOOP GRAM GRAM_COMMENT
 string:/*
 [any]
 string:*/
+
+LOOP GRAM GRAM_COMMENT_ONELINE
+regex:/^\/\/(.*)/
+[any]
+[newline]
 
 GRAM
 GRAM_RULE

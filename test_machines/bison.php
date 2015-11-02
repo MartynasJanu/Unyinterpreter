@@ -472,6 +472,6 @@ class bison extends Base\bisonBase {
     */
     public function end($param = null)
     {
-        //print_r($this->rules);
+        print_r($this->rules);
     }
 }
