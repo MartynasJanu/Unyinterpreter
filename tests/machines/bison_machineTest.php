@@ -50,7 +50,7 @@ class bison_machineTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers unyInterpreter\machines\Base\sql_machineBase::execute
-     * @dataProvider getUnions
+     * @dataProvider getGrammar
      */
     public function testOther($data)
     {
@@ -71,11 +71,118 @@ class bison_machineTest extends \PHPUnit_Framework_TestCase
         if (isset($data['types'])) {
             $this->assertEquals($data['types'], $this->object->types);
         }
+
+        if (isset($data['rules'])) {
+            $this->assertEquals($data['rules'], $this->object->rules);
+        }
     }
 
-    public function getUnions()
+    public function getGrammar()
     {
         return [
+            [
+                [
+                    'input' => '
+                        %%
+                        expseq:   /* empty */
+                                | expseq1
+                                ;
+
+                        expseq1:  exp
+                                | expseq1 \',\' exp
+                                ;
+
+                        opt_end_of_input:
+                                  /* empty */
+                                | END_OF_INPUT
+                                ;
+
+                        emptystringaction: { int a = 0;} ;
+                        ',
+                    'rules' => [
+                        'expseq' => [
+                            'components' => [
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => '',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => 'expseq1',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'expseq1' => [
+                            'components' => [
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => 'exp',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => 'expseq1',
+                                            'action' => '',
+                                        ],
+                                        [
+                                            'id' => "','",
+                                            'action' => '',
+                                        ],
+                                        [
+                                            'id' => 'exp',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'opt_end_of_input' => [
+                            'components' => [
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => '',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'symbols' => [
+                                        [
+                                            'id' => 'END_OF_INPUT',
+                                            'action' => '',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'emptystringaction' => [
+                            'components' => [
+                                    [
+                                    'symbols' => [
+                                        [
+                                            'id' => '',
+                                            'action' => ' int a = 0;',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             [
                 [
                     'input' => '
