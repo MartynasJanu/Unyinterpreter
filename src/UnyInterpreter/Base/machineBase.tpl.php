@@ -132,10 +132,14 @@ class %NAME%Base {
         if (isset($this->state_transitions['[end]'])) {
             $this->callTransitionCallback($this->state_transitions['[end]']);
         }
+
+        //echo 'ENDED at state '.$this->state_id."\n\n";
     }
 
     protected function satisfyCondition($transition, $next = null, $inc_input = 1, $callback = true)
     {
+        //echo $this->state_id.' => '.$transition['target'].': '.$next."\n\n";
+
         if ($callback) {
             if ($this->callTransitionCallback($transition, $next) !== true) {
                 $this->input_i += $inc_input;
