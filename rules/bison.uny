@@ -224,25 +224,23 @@ string:%%
 startGram
 
 GRAM
-GRAM_COMMENT
-string:/*
-
-GRAM_COMMENT
-GRAM
-string:*/
-
-GRAM_COMMENT
-GRAM_COMMENT
-[any]
-
-GRAM
 GRAM
 [whitespace]
 
+LOOP GRAM GRAM_COMMENT
+string:/*
+[any]
+string:*/
+
 GRAM
 GRAM_RULE
-regex:/([A-Za-z0-9_]+)\:/
+regex:/([a-zA-Z0-9_]+)\:/
 startGramRule
+
+LOOP GRAM_RULE GRAM_RULE_COMMENT
+string:/*
+[any]
+string:*/
 
 GRAM_RULE
 GRAM_RULE
@@ -254,49 +252,60 @@ GRAM_RULE_COMPONENT
 startGramRuleComponent
 
 GRAM_RULE_COMPONENT
-GRAM_RULE_COMPONENT
-[whitespace]
-
-GRAM_RULE_COMPONENT
-GRAM_RULE_COMPONENT
-string:|
-
-GRAM_RULE_COMPONENT
-GRAM
-string:;
-
-GRAM_RULE_COMPONENT
 GRAM_RULE_COMPONENT_ACTION
 string:{
 startGramRuleComponentAction
 
-GRAM_RULE_COMPONENT_ACTION
-GRAM_RULE_COMPONENT_ACTION_COMMENT
-string:/*
-
-GRAM_RULE_COMPONENT_ACTION_COMMENT
-GRAM_RULE_COMPONENT_ACTION
-string:*/
-
-GRAM_RULE_COMPONENT_ACTION_COMMENT
-GRAM_RULE_COMPONENT_ACTION_COMMENT
-[any]
+LOOP GRAM_RULE_COMPONENT_ACTION GRAM_RULE_COMPONENT_ACTION_COMMENT
+string:/* pushGramRuleComponentAction
+[any] pushGramRuleComponentAction
+string:*/ pushGramRuleComponentAction
 
 GRAM_RULE_COMPONENT_ACTION
 GRAM_RULE_COMPONENT
-call:isEndGramRuleComponentAction
-endGramRuleComponentAction
+call:isStopGramRuleComponentAction
+stopGramRuleComponentAction
 
 GRAM_RULE_COMPONENT_ACTION
 GRAM_RULE_COMPONENT_ACTION
 [any]
 pushGramRuleComponentAction
 
+GRAM_RULE_COMPONENT_ACTION
+GRAM_RULE_COMPONENT
+string:}
+stopGramRuleComponentAction
+
+GRAM_RULE_COMPONENT
+GRAM_RULE
+string:|
+stopGramRuleComponent
+
+GRAM_RULE_COMPONENT
+GRAM
+string:;
+stopGramRuleComponentAndRule
+
 GRAM_RULE_COMPONENT
 GRAM_RULE_COMPONENT
+[whitespace]
+
+GRAM_RULE_COMPONENT
+GRAM_RULE_COMPONENT_SYMBOL
 [notwhitespace]
 pushGramRuleComponent
 
-GRAM
-START
-string:%%
+GRAM_RULE_COMPONENT_SYMBOL
+GRAM_RULE_COMPONENT_SYMBOL
+[notwhitespace]
+pushGramRuleComponent
+
+GRAM_RULE_COMPONENT_SYMBOL
+GRAM_RULE_COMPONENT_ACTION
+string:{
+startGramRuleComponentAction
+
+GRAM_RULE_COMPONENT_SYMBOL
+GRAM_RULE_COMPONENT
+[whitespace]
+stopGramRuleComponent
