@@ -319,27 +319,8 @@ class bison extends Base\bisonBase {
 
     }
 
-    /**
-     * Callback called when swithing states:
-     * GRAM => GRAM_RULE; On condition: regex:/([A-Za-z0-9_]+)\:/
-    */
-    public $gram_rule = '';
-    public function startGramRule($param = null)
+    public function isGramRuleActionProcEnd($param = null)
     {
-        echo 'RULE: '.$param;
-
-        $this->gram_rule = strstr($param, ':', true);
-
-        if (!isset($this->rules[$this->gram_rule])) {
-            $this->rules[$this->gram_rule] = [
-                'components' => [],
-            ];
-        }
-    }
-
-    public function isEndGramRuleComponentAction($param = null)
-    {
-        echo $this->openbraces.' '.$param."\n";
         if ($param == '{') {
             ++$this->openbraces;
         } elseif ($param == '}') {
@@ -351,61 +332,146 @@ class bison extends Base\bisonBase {
             return true;
         }
 
+        //echo 'braces: '.$this->openbraces."\n";
         return false;
     }
 
     /**
      * Callback called when swithing states:
-     * GRAM_RULE => GRAM_RULE_COMPONENT; On condition: [notwhitespace]
+     * GRAM_RULE_ACTION_PROC => GRAM_RULE_ACTION_PROC_COMMENT; On condition: string:/*
+     * GRAM_RULE_ACTION_PROC_COMMENT => GRAM_RULE_ACTION_PROC; On condition: string:* /
+     * GRAM_RULE_ACTION_PROC_COMMENT => GRAM_RULE_ACTION_PROC_COMMENT; On condition: [any]
     */
-    public function startGramRuleComponent($param = null)
+    public function pushGramRuleAction($param = null)
     {
-        $this->gram_rule_component_buffer = $param;
+        $ci = count($this->components) - 1;
+        $si = count($this->components[$ci]['symbols']) - 1;
+        $this->components[$ci]['symbols'][$si]['action'] .= $param;
     }
 
     /**
      * Callback called when swithing states:
-     * GRAM_RULE_COMPONENT => GRAM_RULE_COMPONENT_ACTION; On condition: string:{
+     * GRAM_RULE => GRAM_RULE_ACTION_PROC; On condition: string:{
+     * GRAM_RULE_AND => GRAM_RULE_ACTION_PROC; On condition: string:{
+     * GRAM_RULE_SYMBOL => GRAM_RULE_ACTION_PROC; On condition: string:{
     */
-    public function startGramRuleComponentAction($param = null)
+    public function startGramRuleAction($param = null)
     {
-        $this->rules[$this->gram_rule]['components'][] = [
-            'id' => $this->gram_rule_component_buffer,
+        $this->openbraces = 1;
+
+        if (empty($this->components)) {
+            $this->components = [[]];
+        }
+
+        $ci = count($this->components) - 1;
+        if (empty($this->components[$ci]['symbols'])) {
+            $this->components[$ci]['symbols'][] = [
+                'id' => '',
+                'action' => '',
+            ];
+        }
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM => GRAM_RULE; On condition: regex:/([a-zA-Z0-9_]+)\:/
+    */
+    public $rule = '';
+    public $components = [];
+    public function startGramRule($param = null)
+    {
+        //echo "\nSTART RULE $param\n\n";
+        $param = strstr($param, ':', true);
+        $this->rule = $param;
+        $this->components = null;
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE => GRAM; On condition: string:;
+     * GRAM_RULE_SYMBOL => GRAM; On condition: string:;
+     * GRAM_RULE_ACTION => GRAM; On condition: string:;
+    */
+    public function endGramRule($param = null)
+    {
+        $this->rules[$this->rule] = [];
+        $this->rules[$this->rule]['components'] = $this->components;
+
+        //print_r($this->components);
+        //echo "\nEND RULE ".$this->rule."\n\n";
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM_RULE => GRAM_RULE_SYMBOL; On condition: [notwhitespace]
+     * GRAM_RULE_AND => GRAM_RULE_SYMBOL; On condition: [notwhitespace]
+     * GRAM_RULE_ACTION => GRAM_RULE_SYMBOL; On condition: [notwhitespace]
+    */
+    public function startGramRuleSymbol($param = null)
+    {
+        if (empty($this->components)) {
+            $this->components = [[]];
+        }
+
+        $ci = count($this->components) - 1;
+        $this->components[$ci]['symbols'][] = [
+            'id' => '',
+            'action' => '',
         ];
 
-        $this->openbraces = 1;
+        $this->pushGramRuleSymbol($param);
     }
 
     /**
      * Callback called when swithing states:
-     * GRAM_RULE_COMPONENT => GRAM_RULE_COMPONENT; On condition: [notwhitespace]
+     * GRAM_RULE_SYMBOL => GRAM_RULE_SYMBOL; On condition: [notwhitespace]
     */
-    public $gram_rule_component_buffer = '';
-    public function pushGramRuleComponent($param = null)
+    public function pushGramRuleSymbol($param = null)
     {
-        $this->gram_rule_component_buffer .= $param;
+        $ci = count($this->components) - 1;
+        $si = count($this->components[$ci]['symbols']) - 1;
+        $this->components[$ci]['symbols'][$si]['id'] .= $param;
     }
 
     /**
      * Callback called when swithing states:
-     * GRAM_RULE_COMPONENT_ACTION => GRAM_RULE_COMPONENT; On condition: call:isEndGramRuleComponentAction
+     * GRAM_RULE_SYMBOL => GRAM_RULE; On condition: [whitespace]
     */
-    public function endGramRuleComponentAction($param = null)
+    public function endGramRuleSymbol($param = null)
     {
-        $this->gram_rule_component_buffer = $param;
-        print_r($this->rules);
     }
+
 
     /**
      * Callback called when swithing states:
-     * GRAM_RULE_COMPONENT_ACTION => GRAM_RULE_COMPONENT_ACTION; On condition: [any]
+     * GRAM_RULE => GRAM_RULE_AND; On condition: string:|
+     * GRAM_RULE_SYMBOL => GRAM_RULE_AND; On condition: string:|
+     * GRAM_RULE_ACTION => GRAM_RULE_AND; On condition: string:|
     */
-    public function pushGramRuleComponentAction($param = null)
+    public function startGramRulePipe($param = null)
     {
-        $i = count($this->rules[$this->gram_rule]['components']) - 1;
-        if (empty($this->rules[$this->gram_rule]['components'][$i]['action'])) {
-            $this->rules[$this->gram_rule]['components'][$i] = ['action' => ''];
+        // add empty symbol with no action if first symbol is pipe
+        // probably: /* empty */ | symbol
+        if (empty($this->components)) {
+            $this->components[] = [
+                'symbols' => [
+                    [
+                        'id' => '',
+                        'action' => '',
+                    ],
+                ],
+            ];
         }
-        $this->rules[$this->gram_rule]['components'][$i]['action'] .= $param;
+
+        $this->components[] = [];
+    }
+
+    /**
+     * Callback called when swithing states:
+     * GRAM => GRAM; On condition: [end]
+    */
+    public function end($param = null)
+    {
+        //print_r($this->rules);
     }
 }

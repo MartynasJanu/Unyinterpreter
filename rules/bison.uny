@@ -48,13 +48,13 @@ string:}
 endUnion
 
 UNION
-UNION_TYPE
-[notwhitespace]
+UNION_STRUCT
+regex:/\s+struct(\s*?)\{/
 startUnionType
 
 UNION
-UNION_STRUCT
-regex:/\s+struct(\s*?)\{/
+UNION_TYPE
+[notwhitespace]
 startUnionType
 
 UNION
@@ -247,65 +247,98 @@ GRAM_RULE
 [whitespace]
 
 GRAM_RULE
-GRAM_RULE_COMPONENT
-[notwhitespace]
-startGramRuleComponent
-
-GRAM_RULE_COMPONENT
-GRAM_RULE_COMPONENT_ACTION
-string:{
-startGramRuleComponentAction
-
-LOOP GRAM_RULE_COMPONENT_ACTION GRAM_RULE_COMPONENT_ACTION_COMMENT
-string:/* pushGramRuleComponentAction
-[any] pushGramRuleComponentAction
-string:*/ pushGramRuleComponentAction
-
-GRAM_RULE_COMPONENT_ACTION
-GRAM_RULE_COMPONENT
-call:isStopGramRuleComponentAction
-stopGramRuleComponentAction
-
-GRAM_RULE_COMPONENT_ACTION
-GRAM_RULE_COMPONENT_ACTION
-[any]
-pushGramRuleComponentAction
-
-GRAM_RULE_COMPONENT_ACTION
-GRAM_RULE_COMPONENT
-string:}
-stopGramRuleComponentAction
-
-GRAM_RULE_COMPONENT
-GRAM_RULE
+GRAM_RULE_AND
 string:|
-stopGramRuleComponent
+startGramRulePipe
 
-GRAM_RULE_COMPONENT
+GRAM_RULE
+GRAM_RULE_ACTION_PROC
+string:{
+startGramRuleAction
+
+GRAM_RULE
 GRAM
 string:;
-stopGramRuleComponentAndRule
+endGramRule
 
-GRAM_RULE_COMPONENT
-GRAM_RULE_COMPONENT
+GRAM_RULE
+GRAM_RULE_SYMBOL
+[notwhitespace]
+startGramRuleSymbol
+
+GRAM_RULE_AND
+GRAM_RULE_AND
 [whitespace]
 
-GRAM_RULE_COMPONENT
-GRAM_RULE_COMPONENT_SYMBOL
-[notwhitespace]
-pushGramRuleComponent
-
-GRAM_RULE_COMPONENT_SYMBOL
-GRAM_RULE_COMPONENT_SYMBOL
-[notwhitespace]
-pushGramRuleComponent
-
-GRAM_RULE_COMPONENT_SYMBOL
-GRAM_RULE_COMPONENT_ACTION
+GRAM_RULE_AND
+GRAM_RULE_ACTION_PROC
 string:{
-startGramRuleComponentAction
+startGramRuleAction
 
-GRAM_RULE_COMPONENT_SYMBOL
-GRAM_RULE_COMPONENT
+GRAM_RULE_AND
+GRAM_RULE_SYMBOL
+[notwhitespace]
+startGramRuleSymbol
+
+GRAM_RULE_SYMBOL
+GRAM_RULE_AND
+string:|
+startGramRulePipe
+
+GRAM_RULE_SYMBOL
+GRAM_RULE_ACTION_PROC
+string:{
+startGramRuleAction
+
+GRAM_RULE_SYMBOL
+GRAM_RULE_SYMBOL
+[notwhitespace]
+pushGramRuleSymbol
+
+GRAM_RULE_SYMBOL
+GRAM_RULE
 [whitespace]
-stopGramRuleComponent
+endGramRuleSymbol
+
+GRAM_RULE_SYMBOL
+GRAM
+string:;
+endGramRule
+
+LOOP GRAM_RULE_ACTION_PROC GRAM_RULE_ACTION_PROC_COMMENT
+string:/* pushGramRuleAction
+[any] pushGramRuleAction
+string:*/ pushGramRuleAction
+
+GRAM_RULE_ACTION_PROC
+GRAM_RULE_ACTION
+call:isGramRuleActionProcEnd
+
+GRAM_RULE_ACTION_PROC
+GRAM_RULE_ACTION_PROC
+[any]
+pushGramRuleAction
+
+GRAM_RULE_ACTION
+GRAM_RULE_ACTION
+[whitespace]
+
+GRAM_RULE_ACTION
+GRAM_RULE_AND
+string:|
+startGramRulePipe
+
+GRAM_RULE_ACTION
+GRAM
+string:;
+endGramRule
+
+GRAM_RULE_ACTION
+GRAM_RULE_SYMBOL
+[notwhitespace]
+startGramRuleSymbol
+
+GRAM
+GRAM
+[end]
+end
